@@ -1,0 +1,33 @@
+name: Building multi template project
+
+on: 
+  workflow_dispatch:
+          inputs:
+            buildVersion:
+              description: 'Build Version'
+            buildID:
+              description: 'Build ID'
+jobs:
+  deployment:
+    runs-on: windows-latest
+    
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: rafaelhd/sharedTemplates  # Replace with the actual repository name
+          path: varsRepo
+          #token: ${{ secrets.GITHUB_TOKEN }}  # Use the default token
+      - name: Load environment from YAML
+        uses: doughepi/yaml-env-action@v1.0.0
+        with:
+            files: varsRepo/variables/variablesProject1.yml # Pass a space-separated list of configuration files. Rightmost files take precedence.
+    
+      - name: validate variables and parameters
+        shell: pwsh
+        run: |
+          Write-Host "Parameter 1: ${{ github.event.inputs.buildVersion }}"
+          Write-Host "Parameter 2: ${{ github.event.inputs.buildID }}"
+          Write-Host "Name: $env:name"
+          Write-Host "Last Name: $env:lastname"
+          Write-Host "ID: $env:id"
